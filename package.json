@@ -1,0 +1,60 @@
+{
+  "name": "chillywallet",
+  "version": "2.0.0",
+  "description": "ChillyWallet - Bitcoin Wallet for React Native",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-native start",
+    "ios": "react-native run-ios",
+    "android": "react-native run-android",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "bitcoin",
+    "wallet",
+    "react-native"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@noble/hashes": "^1.7.1",
+    "@noble/secp256k1": "^2.2.3",
+    "@react-navigation/native": "^7.1.28",
+    "@react-navigation/native-stack": "^7.10.1",
+    "@scure/base": "^1.2.4",
+    "@scure/bip32": "^1.6.2",
+    "@scure/bip39": "^1.5.4",
+    "@tanstack/react-query": "^5.90.19",
+    "@types/react": "^19.2.8",
+    "@types/react-native": "^0.72.8",
+    "react": "^19.2.3",
+    "react-native": "^0.83.1",
+    "react-native-get-random-values": "^2.0.0",
+    "react-native-keychain": "^10.0.0",
+    "react-native-qrcode-svg": "^6.3.12",
+    "react-native-safe-area-context": "^5.6.2",
+    "react-native-screens": "^4.20.0",
+    "react-native-svg": "^15.11.2",
+    "styled-components": "^6.3.8",
+    "typescript": "^5.9.3",
+    "zustand": "^5.0.10"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.6",
+    "@babel/preset-env": "^7.28.6",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
+    "@babel/runtime": "^7.28.6",
+    "@react-native-community/cli": "^20.1.0",
+    "@react-native/babel-preset": "^0.83.1",
+    "@react-native/metro-config": "^0.83.1",
+    "@react-native/typescript-config": "^0.83.1",
+    "@testing-library/react-native": "^13.3.3",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "metro": "^0.83.3",
+    "ts-jest": "^29.4.6"
+  }
+}
