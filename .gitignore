@@ -80,6 +80,8 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output/
+ios/fastlane/report.xml
+*.mobileprovision
 
 # Xcode
 xcuserdata/

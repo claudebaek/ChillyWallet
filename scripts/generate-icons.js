@@ -14,6 +14,16 @@ const path = require('path');
 
 const sharp = require('sharp');
 
+// Flatten alpha by compositing on solid background and removing alpha channel
+async function flattenImage(svgBuffer, size) {
+  return sharp(svgBuffer)
+    .resize(size, size)
+    .flatten({ background: { r: 41, g: 182, b: 246 } }) // #29B6F6
+    .removeAlpha()
+    .png()
+    .toBuffer();
+}
+
 // ChillyWallet Icon SVG - Bitcoin symbol with ice/cold theme
 const ICON_SVG = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
@@ -140,10 +150,8 @@ async function generateIcons() {
   console.log('📱 Generating iOS icons...');
   for (const icon of IOS_ICONS) {
     const outputPath = path.join(iosIconPath, icon.name);
-    await sharp(svgBuffer)
-      .resize(icon.size, icon.size)
-      .png()
-      .toFile(outputPath);
+    const flatBuffer = await flattenImage(svgBuffer, icon.size);
+    await sharp(flatBuffer).toFile(outputPath);
     console.log(`  ✅ ${icon.name} (${icon.size}x${icon.size})`);
   }
 

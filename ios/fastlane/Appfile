@@ -1,14 +1,14 @@
 # App Identifier (Bundle ID)
-app_identifier("com.chillywallet.app")
+app_identifier("org.reactjs.native.leejay100.RNWeb3Wallet")
 
 # Apple Developer Account
-apple_id(ENV["APPLE_ID"] || "your-apple-id@example.com")
-
-# App Store Connect Team ID
-itc_team_id(ENV["ITC_TEAM_ID"])
+apple_id("withbns@gmail.com")
 
 # Developer Portal Team ID
-team_id(ENV["TEAM_ID"])
+team_id("96FPVL6LQJ")
+
+# App Store Connect Team ID
+itc_team_id("118045220")
 
 # For more information about the Appfile, see:
 # https://docs.fastlane.tools/advanced/#appfile

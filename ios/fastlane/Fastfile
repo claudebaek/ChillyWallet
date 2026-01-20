@@ -7,9 +7,10 @@ platform :ios do
   # Configuration
   # ==========================================
   
-  APP_IDENTIFIER = "com.chillywallet.app"
+  APP_IDENTIFIER = "org.reactjs.native.leejay100.RNWeb3Wallet"
   WORKSPACE = "RNWeb3Wallet.xcworkspace"
   SCHEME = "RNWeb3Wallet"
+  PROVISIONING_PROFILE = "org.reactjs.native.leejay100.RNWeb3Wallet AppStore"
   
   # ==========================================
   # Lanes
@@ -32,6 +33,11 @@ platform :ios do
       scheme: SCHEME,
       configuration: "Release",
       export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          APP_IDENTIFIER => PROVISIONING_PROFILE
+        }
+      },
       output_directory: "./build",
       output_name: "ChillyWallet.ipa",
       clean: true
@@ -54,6 +60,11 @@ platform :ios do
       scheme: SCHEME,
       configuration: "Release",
       export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          APP_IDENTIFIER => PROVISIONING_PROFILE
+        }
+      },
       output_directory: "./build",
       output_name: "ChillyWallet.ipa",
       clean: true
@@ -92,10 +103,9 @@ platform :ios do
 
   desc "Sync code signing certificates and profiles"
   lane :sync_certificates do
-    match(
-      type: "appstore",
+    sigh(
       app_identifier: APP_IDENTIFIER,
-      readonly: true
+      readonly: false
     )
   end
 
@@ -108,11 +118,6 @@ platform :ios do
       devices: {
         device_name => device_udid
       }
-    )
-    
-    match(
-      type: "development",
-      force_for_new_devices: true
     )
   end
 
