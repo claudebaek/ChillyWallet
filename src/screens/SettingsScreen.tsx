@@ -151,16 +151,20 @@ interface SettingsScreenProps {
 }
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onLogout, navigation }) => {
-  const { wallet, network, setNetwork, reset } = useWalletStore();
+  const { wallet, network, setNetwork, reset, isLoading } = useWalletStore();
   const [showNetworkPicker, setShowNetworkPicker] = useState(false);
 
-  const handleNetworkChange = (newNetwork: Network) => {
-    setNetwork(newNetwork);
+  const handleNetworkChange = async (newNetwork: Network) => {
     setShowNetworkPicker(false);
-    Alert.alert(
-      'Network Changed',
-      `Switched to ${newNetwork.name}. Note: Your address may change on different networks.`
-    );
+    try {
+      await setNetwork(newNetwork);
+      Alert.alert(
+        'Network Changed',
+        `Switched to ${newNetwork.name}. Your wallet has been updated for the new network.`
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Failed to switch network. Please try again.');
+    }
   };
 
   const handleViewSeedPhrase = () => {

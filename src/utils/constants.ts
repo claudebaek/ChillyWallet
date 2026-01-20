@@ -16,7 +16,7 @@ export const NETWORKS: Record<string, Network> = {
   },
 };
 
-export const DEFAULT_NETWORK = NETWORKS.testnet;
+export const DEFAULT_NETWORK = NETWORKS.mainnet;
 
 // Storage Keys for Keychain
 export const STORAGE_KEYS = {
@@ -42,7 +42,7 @@ export const SAMPLE_TRANSACTIONS: Transaction[] = [
     type: 'received',
     status: 'confirmed',
     timestamp: Date.now() - 1000 * 60 * 60 * 2, // 2 hours ago
-    fromAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+    fromAddress: 'bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4',
   },
   {
     txid: 'b2c3d4e5f67890123456789012345678901abcdef23456789012345678901234',
@@ -52,7 +52,7 @@ export const SAMPLE_TRANSACTIONS: Transaction[] = [
     type: 'sent',
     status: 'confirmed',
     timestamp: Date.now() - 1000 * 60 * 60 * 24, // 1 day ago
-    toAddress: 'tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sl5k7',
+    toAddress: 'bc1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3pjxtptv',
   },
   {
     txid: 'c3d4e5f678901234567890123456789012abcdef34567890123456789012345',
@@ -62,7 +62,7 @@ export const SAMPLE_TRANSACTIONS: Transaction[] = [
     type: 'received',
     status: 'confirmed',
     timestamp: Date.now() - 1000 * 60 * 60 * 24 * 3, // 3 days ago
-    fromAddress: 'tb1qqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesrxh6hy',
+    fromAddress: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
   },
   {
     txid: 'd4e5f6789012345678901234567890123abcdef456789012345678901234567',
@@ -72,7 +72,7 @@ export const SAMPLE_TRANSACTIONS: Transaction[] = [
     type: 'received',
     status: 'confirmed',
     timestamp: Date.now() - 1000 * 60 * 60 * 24 * 7, // 1 week ago
-    fromAddress: 'tb1pqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesf3hn0c',
+    fromAddress: 'bc1p5d7rjq7g6rdk2yhzks9smlaqtedr4dekq08ge8ztwac72sfr9rusxg3297',
   },
 ];
 

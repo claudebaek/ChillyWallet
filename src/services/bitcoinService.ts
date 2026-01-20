@@ -1,18 +1,41 @@
 /**
  * Bitcoin Service
- * Handles wallet creation, address derivation, and transaction data
+ * Handles wallet creation, address derivation, and real blockchain operations
  */
 
-import { Transaction, Wallet, NetworkType } from '../types';
+import { Transaction, Wallet, NetworkType, UTXO } from '../types';
 import {
   generateMnemonic,
   validateMnemonic,
   deriveAddress,
+  derivePrivateKey,
   isValidAddress,
 } from '../utils/crypto';
-import { SAMPLE_TRANSACTIONS, SAMPLE_BALANCE_SATOSHIS } from '../utils/constants';
+import { blockchainService } from './blockchainService';
+import { DUST_LIMIT } from '../utils/constants';
+
+// P2WPKH input/output sizes for fee calculation
+const P2WPKH_INPUT_SIZE = 68; // vbytes
+const P2WPKH_OUTPUT_SIZE = 31; // vbytes
+const TX_OVERHEAD = 10.5; // vbytes
 
 class BitcoinService {
+  private currentNetwork: NetworkType = 'mainnet';
+
+  /**
+   * Set the current network
+   */
+  setNetwork(network: NetworkType): void {
+    this.currentNetwork = network;
+  }
+
+  /**
+   * Get the current network
+   */
+  getNetwork(): NetworkType {
+    return this.currentNetwork;
+  }
+
   /**
    * Generate a new 12-word mnemonic
    */
@@ -30,7 +53,8 @@ class BitcoinService {
   /**
    * Create a wallet from mnemonic
    */
-  createWallet(mnemonic: string, network: NetworkType = 'testnet'): Wallet {
+  createWallet(mnemonic: string, network: NetworkType = 'mainnet'): Wallet {
+    this.currentNetwork = network;
     const { address, derivationPath } = deriveAddress(mnemonic, network);
 
     return {
@@ -49,115 +73,246 @@ class BitcoinService {
   }
 
   /**
-   * Get balance for an address (demo: returns sample data)
+   * Get balance for an address from blockchain
    */
-  async getBalance(address: string): Promise<number> {
-    // In a real app, this would call a blockchain API like:
-    // - Blockstream API: https://blockstream.info/api/
-    // - BlockCypher API: https://api.blockcypher.com/
-    // - Mempool.space API: https://mempool.space/api/
-
-    // Simulate network delay
-    await this.delay(500);
-
-    // Return sample balance for demo
-    return SAMPLE_BALANCE_SATOSHIS;
+  async getBalance(address: string, network?: NetworkType): Promise<number> {
+    const net = network || this.currentNetwork;
+    return blockchainService.getBalance(address, net);
   }
 
   /**
-   * Get transactions for an address (demo: returns sample data)
+   * Get transactions for an address from blockchain
    */
-  async getTransactions(address: string): Promise<Transaction[]> {
-    // Simulate network delay
-    await this.delay(500);
-
-    // Return sample transactions for demo
-    return SAMPLE_TRANSACTIONS;
+  async getTransactions(
+    address: string,
+    network?: NetworkType
+  ): Promise<Transaction[]> {
+    const net = network || this.currentNetwork;
+    return blockchainService.getTransactions(address, net);
   }
 
   /**
-   * Estimate transaction fee (demo)
-   * Returns fee in satoshis
+   * Get UTXOs for an address
    */
-  async estimateFee(priority: 'low' | 'medium' | 'high' = 'medium'): Promise<number> {
-    await this.delay(200);
+  async getUTXOs(address: string, network?: NetworkType): Promise<UTXO[]> {
+    const net = network || this.currentNetwork;
+    return blockchainService.getUTXOs(address, net);
+  }
 
-    // Sample fee rates (satoshis per vbyte)
-    const feeRates = {
-      low: 5,
-      medium: 15,
-      high: 30,
+  /**
+   * Estimate transaction fee based on current network conditions
+   * Returns fee in satoshis for a standard transaction
+   */
+  async estimateFee(
+    priority: 'low' | 'medium' | 'high' = 'medium',
+    inputCount: number = 1,
+    outputCount: number = 2, // recipient + change
+    network?: NetworkType
+  ): Promise<{ fee: number; feeRate: number }> {
+    const net = network || this.currentNetwork;
+    const feeEstimates = await blockchainService.getFeeEstimates(net);
+
+    // Map priority to fee rate
+    let feeRate: number;
+    switch (priority) {
+      case 'high':
+        feeRate = feeEstimates.fastestFee;
+        break;
+      case 'medium':
+        feeRate = feeEstimates.halfHourFee;
+        break;
+      case 'low':
+        feeRate = feeEstimates.hourFee;
+        break;
+    }
+
+    // Calculate transaction size
+    const txSize = Math.ceil(
+      TX_OVERHEAD +
+        inputCount * P2WPKH_INPUT_SIZE +
+        outputCount * P2WPKH_OUTPUT_SIZE
+    );
+
+    return {
+      fee: feeRate * txSize,
+      feeRate,
     };
-
-    // Assume a typical transaction size of ~140 vbytes
-    const txSize = 140;
-    return feeRates[priority] * txSize;
   }
 
   /**
-   * Send Bitcoin (demo: simulates transaction)
-   * In production, this would create, sign, and broadcast a real transaction
+   * Select UTXOs for a transaction (simple coin selection)
+   */
+  selectUTXOs(
+    utxos: UTXO[],
+    targetAmount: number,
+    feeRate: number
+  ): { selectedUTXOs: UTXO[]; fee: number; change: number } | null {
+    // Sort UTXOs by value (largest first for fewer inputs)
+    const sortedUTXOs = [...utxos].sort((a, b) => b.value - a.value);
+
+    const selectedUTXOs: UTXO[] = [];
+    let totalInput = 0;
+
+    for (const utxo of sortedUTXOs) {
+      selectedUTXOs.push(utxo);
+      totalInput += utxo.value;
+
+      // Calculate fee with current input count
+      const hasChange = true; // Assume we'll have change
+      const outputCount = hasChange ? 2 : 1;
+      const txSize = Math.ceil(
+        TX_OVERHEAD +
+          selectedUTXOs.length * P2WPKH_INPUT_SIZE +
+          outputCount * P2WPKH_OUTPUT_SIZE
+      );
+      const fee = feeRate * txSize;
+
+      const change = totalInput - targetAmount - fee;
+
+      // Check if we have enough
+      if (change >= 0) {
+        // If change is dust, absorb it into fee
+        if (change < DUST_LIMIT) {
+          return {
+            selectedUTXOs,
+            fee: fee + change,
+            change: 0,
+          };
+        }
+        return { selectedUTXOs, fee, change };
+      }
+    }
+
+    // Not enough funds
+    return null;
+  }
+
+  /**
+   * Send Bitcoin - creates, signs, and broadcasts a transaction
    */
   async sendBitcoin(
-    fromAddress: string,
+    mnemonic: string,
     toAddress: string,
     amount: number, // in satoshis
-    fee: number // in satoshis
-  ): Promise<{ txid: string; success: boolean }> {
-    // Validate addresses
-    if (!this.isValidAddress(fromAddress)) {
-      throw new Error('Invalid sender address');
-    }
+    priority: 'low' | 'medium' | 'high' = 'medium',
+    network?: NetworkType
+  ): Promise<{ txid: string; fee: number }> {
+    const net = network || this.currentNetwork;
+
+    // Validate recipient address
     if (!this.isValidAddress(toAddress)) {
       throw new Error('Invalid recipient address');
     }
-    if (amount <= 0) {
-      throw new Error('Amount must be greater than 0');
+
+    if (amount < DUST_LIMIT) {
+      throw new Error(`Amount too small. Minimum is ${DUST_LIMIT} satoshis`);
     }
 
-    // Simulate transaction broadcast
-    await this.delay(2000);
+    // Get our address and private key
+    const { address } = deriveAddress(mnemonic, net);
+    const privateKey = derivePrivateKey(mnemonic, net);
 
-    // Generate a fake txid for demo
-    const txid = this.generateFakeTxid();
+    // Get UTXOs
+    const utxos = await this.getUTXOs(address, net);
+    if (utxos.length === 0) {
+      throw new Error('No UTXOs available');
+    }
 
-    return { txid, success: true };
+    // Get fee rate
+    const feeEstimates = await blockchainService.getFeeEstimates(net);
+    let feeRate: number;
+    switch (priority) {
+      case 'high':
+        feeRate = feeEstimates.fastestFee;
+        break;
+      case 'medium':
+        feeRate = feeEstimates.halfHourFee;
+        break;
+      case 'low':
+        feeRate = feeEstimates.hourFee;
+        break;
+    }
+
+    // Select UTXOs
+    const selection = this.selectUTXOs(utxos, amount, feeRate);
+    if (!selection) {
+      throw new Error('Insufficient funds');
+    }
+
+    // Build and sign transaction
+    const txHex = await this.buildAndSignTransaction(
+      privateKey,
+      address,
+      toAddress,
+      amount,
+      selection.selectedUTXOs,
+      selection.change,
+      net
+    );
+
+    // Broadcast transaction
+    const txid = await blockchainService.broadcastTransaction(txHex, net);
+
+    return { txid, fee: selection.fee };
   }
 
   /**
-   * Get address info from blockchain (demo)
+   * Build and sign a transaction
+   * This is a simplified implementation using native libraries
    */
-  async getAddressInfo(address: string): Promise<{
+  private async buildAndSignTransaction(
+    privateKey: Uint8Array,
+    fromAddress: string,
+    toAddress: string,
+    amount: number,
+    utxos: UTXO[],
+    change: number,
+    network: NetworkType
+  ): Promise<string> {
+    // Import signing utilities
+    const { buildTransaction, signTransaction } = await import('../utils/transaction');
+
+    // Build unsigned transaction
+    const unsignedTx = buildTransaction({
+      inputs: utxos.map((utxo) => ({
+        txid: utxo.txid,
+        vout: utxo.vout,
+        value: utxo.value,
+      })),
+      outputs: [
+        { address: toAddress, value: amount },
+        ...(change > 0 ? [{ address: fromAddress, value: change }] : []),
+      ],
+      network,
+    });
+
+    // Sign transaction
+    const signedTx = signTransaction(unsignedTx, privateKey, network);
+
+    return signedTx;
+  }
+
+  /**
+   * Get address info from blockchain
+   */
+  async getAddressInfo(
+    address: string,
+    network?: NetworkType
+  ): Promise<{
     balance: number;
     txCount: number;
-    unconfirmedBalance: number;
   }> {
-    await this.delay(300);
+    const net = network || this.currentNetwork;
+
+    const [balance, transactions] = await Promise.all([
+      this.getBalance(address, net),
+      this.getTransactions(address, net),
+    ]);
 
     return {
-      balance: SAMPLE_BALANCE_SATOSHIS,
-      txCount: SAMPLE_TRANSACTIONS.length,
-      unconfirmedBalance: 0,
+      balance,
+      txCount: transactions.length,
     };
-  }
-
-  /**
-   * Helper: Generate fake transaction ID for demo
-   */
-  private generateFakeTxid(): string {
-    const chars = '0123456789abcdef';
-    let txid = '';
-    for (let i = 0; i < 64; i++) {
-      txid += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return txid;
-  }
-
-  /**
-   * Helper: Delay for simulating network calls
-   */
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 

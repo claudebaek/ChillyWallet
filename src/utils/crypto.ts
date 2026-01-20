@@ -47,7 +47,7 @@ export function mnemonicToSeed(mnemonic: string, passphrase: string = ''): Uint8
  */
 export function deriveAddress(
   mnemonic: string,
-  network: 'mainnet' | 'testnet' = 'testnet',
+  network: 'mainnet' | 'testnet' = 'mainnet',
   accountIndex: number = 0,
   addressIndex: number = 0
 ): { address: string; derivationPath: string } {
@@ -72,10 +72,69 @@ export function deriveAddress(
 }
 
 /**
+ * Derive private key from mnemonic
+ * @param mnemonic - 12 or 24 word seed phrase
+ * @param network - 'mainnet' or 'testnet'
+ * @param accountIndex - Account index (default 0)
+ * @param addressIndex - Address index (default 0)
+ */
+export function derivePrivateKey(
+  mnemonic: string,
+  network: 'mainnet' | 'testnet' = 'mainnet',
+  accountIndex: number = 0,
+  addressIndex: number = 0
+): Uint8Array {
+  const seed = mnemonicToSeed(mnemonic);
+  const hdKey = HDKey.fromMasterSeed(seed);
+
+  const coinType = network === 'mainnet' ? BITCOIN_MAINNET_COIN : BITCOIN_TESTNET_COIN;
+  const derivationPath = `m/${BIP84_PURPOSE}'/${coinType}'/${accountIndex}'/0/${addressIndex}`;
+
+  const derived = hdKey.derive(derivationPath);
+
+  if (!derived.privateKey) {
+    throw new Error('Failed to derive private key');
+  }
+
+  return derived.privateKey;
+}
+
+/**
+ * Derive public key from mnemonic
+ */
+export function derivePublicKey(
+  mnemonic: string,
+  network: 'mainnet' | 'testnet' = 'mainnet',
+  accountIndex: number = 0,
+  addressIndex: number = 0
+): Uint8Array {
+  const seed = mnemonicToSeed(mnemonic);
+  const hdKey = HDKey.fromMasterSeed(seed);
+
+  const coinType = network === 'mainnet' ? BITCOIN_MAINNET_COIN : BITCOIN_TESTNET_COIN;
+  const derivationPath = `m/${BIP84_PURPOSE}'/${coinType}'/${accountIndex}'/0/${addressIndex}`;
+
+  const derived = hdKey.derive(derivationPath);
+
+  if (!derived.publicKey) {
+    throw new Error('Failed to derive public key');
+  }
+
+  return derived.publicKey;
+}
+
+/**
  * Hash160 = RIPEMD160(SHA256(data))
  */
-function hash160(data: Uint8Array): Uint8Array {
+export function hash160(data: Uint8Array): Uint8Array {
   return ripemd160(sha256(data));
+}
+
+/**
+ * Double SHA256
+ */
+export function doubleSha256(data: Uint8Array): Uint8Array {
+  return sha256(sha256(data));
 }
 
 /**

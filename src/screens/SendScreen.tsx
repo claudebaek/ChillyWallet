@@ -200,7 +200,7 @@ interface SendScreenProps {
 type FeeLevel = 'low' | 'medium' | 'high';
 
 export const SendScreen: React.FC<SendScreenProps> = ({ navigation }) => {
-  const { wallet, btcPrice, refreshBalance } = useWalletStore();
+  const { wallet, btcPrice, sendBitcoin, isLoading } = useWalletStore();
 
   const [toAddress, setToAddress] = useState('');
   const [amount, setAmount] = useState('');
@@ -281,30 +281,22 @@ export const SendScreen: React.FC<SendScreenProps> = ({ navigation }) => {
 
     setSending(true);
     try {
-      const result = await bitcoinService.sendBitcoin(
-        wallet.address,
-        toAddress,
-        amountSatoshis,
-        estimatedFee
-      );
+      const result = await sendBitcoin(toAddress, amountSatoshis, feeLevel);
 
-      if (result.success) {
-        Alert.alert(
-          'Transaction Sent',
-          `Your transaction has been broadcast.\n\nTxID: ${result.txid.slice(0, 16)}...`,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                refreshBalance();
-                navigation.goBack();
-              },
+      Alert.alert(
+        'Transaction Sent',
+        `Your transaction has been broadcast to the Bitcoin network.\n\nTxID: ${result.txid.slice(0, 16)}...\n\nFee: ${result.fee} sats`,
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.goBack();
             },
-          ]
-        );
-      }
+          },
+        ]
+      );
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to send transaction');
+      Alert.alert('Transaction Failed', error.message || 'Failed to send transaction');
     } finally {
       setSending(false);
     }
