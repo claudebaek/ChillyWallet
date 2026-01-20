@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/splash_background">
+
+    <!-- Snowflake decoration top-left -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="❄"
+        android:textSize="24sp"
+        android:textColor="@color/white_30"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="100dp"/>
+
+    <!-- Snowflake decoration top-right -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="❄"
+        android:textSize="20sp"
+        android:textColor="@color/white_30"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="50dp"
+        android:layout_marginTop="150dp"/>
+
+    <!-- Center content container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="20dp">
+
+        <!-- Bitcoin Symbol -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₿"
+            android:textSize="100sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- App Name -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ChillyWallet"
+            android:textSize="42sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Quote -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="There is no second best"
+            android:textSize="18sp"
+            android:textColor="@color/white_80"
+            android:textStyle="italic"/>
+
+    </LinearLayout>
+
+    <!-- Snowflake decoration bottom-left -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="❄"
+        android:textSize="18sp"
+        android:textColor="@color/white_30"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginBottom="150dp"/>
+
+    <!-- Snowflake decoration bottom-right -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="❄"
+        android:textSize="22sp"
+        android:textColor="@color/white_30"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="70dp"
+        android:layout_marginBottom="100dp"/>
+
+</RelativeLayout>
