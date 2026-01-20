@@ -1,0 +1,25 @@
+ChillyWallet - The Ultimate Bitcoin Cold Storage Wallet
+
+"There is no second best" - This philosophy drives everything we build.
+
+FEATURES:
+• Secure Bitcoin Storage - Your private keys never leave your device
+• HD Wallet Support - BIP39/BIP44 compliant hierarchical deterministic wallet
+• Easy Backup - 12/24 word recovery phrase for complete wallet backup
+• QR Code Support - Quick and easy address sharing
+• Transaction History - Track all your Bitcoin transactions
+• Multi-language - English and Korean support
+
+SECURITY:
+• No third-party servers - Your keys, your coins
+• Biometric authentication - Face ID and Touch ID support
+• Encrypted storage - Industry-standard encryption for all sensitive data
+• Open source - Fully auditable codebase
+
+COLD STORAGE:
+ChillyWallet is designed for long-term Bitcoin storage. Keep your Bitcoin safe and secure with our cold wallet solution.
+
+WHY CHILLYWALLET?
+Bitcoin is the hardest money ever created. It deserves the most secure wallet. ChillyWallet provides the security of cold storage with the convenience of a mobile app.
+
+Download ChillyWallet today and take control of your Bitcoin.
