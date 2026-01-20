@@ -1,119 +1,236 @@
-# RNWeb3Wallet
+# ChillyWallet
 
-두나무 iOS Engineer 포지션 준비를 위한 React Native Web3 지갑 앱 포트폴리오 프로젝트입니다.
+<p align="center">
+  <img src="ios/RNWeb3Wallet/Images.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" width="120" height="120" alt="ChillyWallet Logo">
+</p>
 
-## 기술 스택
+<p align="center">
+  <strong>Bitcoin Cold Storage Wallet</strong><br>
+  <em>"There is no second best"</em>
+</p>
 
-| 카테고리 | 기술 |
-|----------|------|
-| **Core** | React Native, TypeScript |
-| **State** | zustand (전역 상태), @tanstack/react-query (서버 상태) |
-| **Web3** | viem (이더리움 라이브러리), WalletConnect v2 |
-| **UI** | styled-components |
-| **Testing** | jest (유닛), detox (E2E) |
-| **Navigation** | @react-navigation/native |
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#testing">Testing</a> •
+  <a href="#deployment">Deployment</a>
+</p>
 
-## 프로젝트 구조
+---
+
+## Features
+
+### Wallet Management
+- **HD Wallet** - BIP39/BIP44 compliant hierarchical deterministic wallet
+- **Mnemonic Backup** - 12/24 word recovery phrase support
+- **Secure Storage** - Private keys stored in device Keychain/Keystore
+
+### Bitcoin Operations
+- **Balance Tracking** - Real-time Bitcoin balance updates
+- **Transaction History** - View all incoming/outgoing transactions
+- **Send Bitcoin** - Easy and secure Bitcoin transfers
+- **Receive Bitcoin** - QR code for address sharing
+
+### Security
+- **Biometric Auth** - Face ID / Touch ID support
+- **No Third-Party Servers** - Your keys never leave your device
+- **Open Source** - Fully auditable codebase
+
+### User Experience
+- **Multi-language** - English and Korean support
+- **Cold Wallet Design** - Ice blue theme for cold storage
+- **Intuitive UI** - Clean and modern interface
+
+## Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| **Framework** | React Native 0.83 |
+| **Language** | TypeScript 5.9 |
+| **State Management** | Zustand |
+| **Server State** | TanStack React Query |
+| **Navigation** | React Navigation 7 |
+| **Styling** | Styled Components |
+| **Crypto** | @scure/bip32, @scure/bip39, @noble/secp256k1 |
+| **Security** | react-native-keychain |
+| **Testing** | Jest, Testing Library, Detox |
+
+## Project Structure
 
 ```
-RNWeb3Wallet/
+ChillyWallet/
 ├── src/
-│   ├── components/     # 재사용 UI 컴포넌트 (Button, Card, Input)
-│   ├── screens/        # 화면 컴포넌트
-│   ├── navigation/     # React Navigation 설정
-│   ├── stores/         # zustand 스토어 (wallet, wc)
-│   ├── hooks/          # react-query 훅 (balance, gas, tx)
-│   ├── services/       # 비즈니스 로직 (wallet, keychain, walletconnect)
-│   ├── utils/          # 유틸리티 함수
-│   └── types/          # TypeScript 타입 정의
-├── __tests__/          # jest 유닛 테스트
-├── e2e/                # detox E2E 테스트
-└── ...config files
+│   ├── components/      # Reusable UI components
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   └── Input.tsx
+│   ├── screens/         # Screen components
+│   │   ├── HomeScreen.tsx
+│   │   ├── SendScreen.tsx
+│   │   ├── ReceiveScreen.tsx
+│   │   └── SettingsScreen.tsx
+│   ├── navigation/      # React Navigation setup
+│   ├── stores/          # Zustand stores
+│   ├── hooks/           # Custom React hooks
+│   ├── services/        # Business logic
+│   │   ├── walletService.ts
+│   │   ├── bitcoinService.ts
+│   │   └── keychainService.ts
+│   ├── utils/           # Utility functions
+│   └── types/           # TypeScript definitions
+├── __tests__/           # Unit tests
+├── e2e/                 # E2E tests (Detox)
+├── ios/                 # iOS native code
+├── android/             # Android native code
+└── scripts/             # Build scripts
 ```
 
-## 주요 기능
+## Installation
 
-### 1. 지갑 관리
-- 니모닉 시드 생성/복구 (viem)
-- 다중 계정 지원
-- Keychain 보안 저장소
+### Prerequisites
 
-### 2. 잔액 조회 및 트랜잭션
-- ETH 잔액 조회 (react-query)
-- 가스비 추정
-- ETH 전송
+- Node.js 20+
+- Ruby 3.0+ (for iOS)
+- Xcode 15+ (for iOS)
+- Android Studio (for Android)
+- CocoaPods
 
-### 3. WalletConnect v2
-- dApp 연결/해제
-- 세션 관리
-- 서명 요청 처리
-
-### 4. 네트워크
-- Ethereum Mainnet
-- Sepolia Testnet
-
-## 설치 및 실행
+### Setup
 
 ```bash
-# 의존성 설치
+# Clone the repository
+git clone https://github.com/claudebaek/ChillyWallet.git
+cd ChillyWallet
+
+# Install dependencies
 npm install
 
-# iOS (macOS only)
-cd ios && pod install && cd ..
-npm run ios
+# iOS setup
+cd ios
+bundle install
+pod install
+cd ..
 
-# Android
-npm run android
-
-# 개발 서버
-npm start
+# Android setup (if needed)
+cd android
+./gradlew clean
+cd ..
 ```
 
-## 테스트
+## Usage
+
+### Development
 
 ```bash
-# 유닛 테스트
+# Start Metro bundler
+npm start
+
+# Run on iOS Simulator
+npm run ios
+
+# Run on Android Emulator
+npm run android
+```
+
+### Building
+
+```bash
+# iOS Release build
+cd ios
+xcodebuild -workspace RNWeb3Wallet.xcworkspace \
+  -scheme RNWeb3Wallet \
+  -configuration Release \
+  -destination 'generic/platform=iOS' \
+  build
+
+# Android Release build
+cd android
+./gradlew assembleRelease
+```
+
+## Testing
+
+```bash
+# Run unit tests
 npm test
 
-# 테스트 커버리지
-npm run test:coverage
+# Run with coverage
+npm test -- --coverage
 
-# E2E 테스트 (iOS)
+# E2E tests (iOS)
 npm run e2e:build:ios
 npm run e2e:test:ios
+
+# Lint
+npm run lint
 ```
 
-## 상태 관리 패턴
+## Deployment
 
-### zustand - 로컬 상태
-```typescript
-const { currentAccount, isLocked, setNetwork } = useWalletStore();
+### TestFlight (iOS)
+
+See [TESTFLIGHT_SETUP.md](./TESTFLIGHT_SETUP.md) for detailed instructions.
+
+```bash
+cd ios
+bundle install
+bundle exec fastlane beta
 ```
 
-### react-query - 서버 상태
-```typescript
-const { balance, isLoading, refetch } = useFormattedBalance();
-const { mutate: sendTx } = useSendTransaction();
-```
+### GitHub Actions
 
-## 두나무 채용 요건 대응
+The project includes CI/CD workflows:
 
-| 요건 | 구현 |
-|------|------|
-| React Native + TypeScript | ✅ 전체 프로젝트 |
-| 상태관리 (zustand, react-query) | ✅ stores/, hooks/ |
-| WalletConnect | ✅ services/walletConnectService.ts |
-| viem | ✅ services/walletService.ts |
-| styled-components | ✅ components/, screens/ |
-| jest | ✅ __tests__/ |
-| detox | ✅ e2e/ |
+- **CI** (`ci.yml`) - Runs on every push/PR
+  - Linting
+  - Unit tests
+  - iOS/Android build verification
 
-## 주의사항
+- **TestFlight Deploy** (`ios-testflight.yml`) - Manual or tag-triggered
+  - Builds release IPA
+  - Uploads to TestFlight
 
-- `WALLETCONNECT_PROJECT_ID`를 실제 프로젝트 ID로 교체 필요
-- react-native-keychain은 실제 디바이스에서만 동작
-- 프로덕션 배포 시 보안 강화 필요
+## Configuration
 
-## 라이선스
+### Environment Variables
 
-MIT
+| Variable | Description |
+|----------|-------------|
+| `APPLE_ID` | Apple Developer account email |
+| `TEAM_ID` | Apple Developer Team ID |
+| `ITC_TEAM_ID` | App Store Connect Team ID |
+
+### App Configuration
+
+Edit `ios/fastlane/Appfile` for iOS deployment settings.
+
+## Security Considerations
+
+- **Private Keys**: Stored encrypted in device Keychain
+- **Mnemonic**: Never stored in plain text
+- **Network**: All API calls use HTTPS
+- **Dependencies**: Regularly audited for vulnerabilities
+
+## Roadmap
+
+- [ ] Real Bitcoin network integration
+- [ ] Multiple wallet support
+- [ ] Hardware wallet integration (Ledger, Trezor)
+- [ ] Lightning Network support
+- [ ] Multisig wallet support
+- [ ] Watch-only wallets
+
+## Acknowledgments
+
+- [Bitcoin](https://bitcoin.org) - The hardest money ever created
+- [React Native](https://reactnative.dev) - Mobile app framework
+- [@scure](https://github.com/paulmillr/scure-bip39) - Secure crypto libraries
+
+---
+
+<p align="center">
+  <strong>ChillyWallet</strong> - Cold Storage for Your Bitcoin<br>
+  <em>"There is no second best"</em>
+</p>
