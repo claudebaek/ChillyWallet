@@ -1,0 +1,13 @@
+ChillyWallet 1.0에 오신 것을 환영합니다!
+
+ChillyWallet은 최고의 비트코인 콜드 스토리지 지갑입니다.
+
+주요 기능:
+• HD 지갑 생성 및 관리 (BIP39/BIP44)
+• iOS 키체인을 통한 안전한 저장
+• 비트코인 송금 및 수신
+• 쉬운 주소 공유를 위한 QR 코드 지원
+• Face ID / Touch ID 인증
+• 깔끔하고 현대적인 아이스 블루 디자인
+
+"There is no second best" - 오늘부터 비트코인을 직접 관리하세요.

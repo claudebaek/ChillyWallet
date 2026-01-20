@@ -38,6 +38,12 @@ module.exports = {
         type: 'iPhone 15'
       }
     },
+    'simulator-promax': {
+      type: 'ios.simulator',
+      device: {
+        type: 'iPhone 15 Pro Max'
+      }
+    },
     attached: {
       type: 'android.attached',
       device: {
@@ -59,6 +65,16 @@ module.exports = {
     'ios.sim.release': {
       device: 'simulator',
       app: 'ios.release'
+    },
+    'ios.sim.promax.release': {
+      device: 'simulator-promax',
+      app: 'ios.release',
+      artifacts: {
+        rootDir: 'ios/fastlane/screenshots',
+        plugins: {
+          screenshot: 'all'
+        }
+      }
     },
     'android.att.debug': {
       device: 'attached',

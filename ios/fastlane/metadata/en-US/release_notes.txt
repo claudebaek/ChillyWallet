@@ -1,0 +1,13 @@
+Welcome to ChillyWallet 1.0!
+
+ChillyWallet is the ultimate Bitcoin cold storage wallet.
+
+Features:
+• Create and manage HD wallets (BIP39/BIP44)
+• Secure storage with iOS Keychain
+• Send and receive Bitcoin
+• QR code support for easy address sharing
+• Face ID / Touch ID authentication
+• Clean, modern ice-blue design
+
+"There is no second best" - Take control of your Bitcoin today.

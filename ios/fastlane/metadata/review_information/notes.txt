@@ -1,0 +1,9 @@
+ChillyWallet is a Bitcoin cold storage wallet application. 
+
+To test the app:
+1. Launch the app
+2. Create a new wallet or import an existing one using a 12/24 word recovery phrase
+3. The app will generate a Bitcoin address for receiving
+4. You can view transaction history and balance
+
+Note: This is a cold storage wallet for Bitcoin. No login credentials are required. The app works offline and stores private keys securely on the device using iOS Keychain.

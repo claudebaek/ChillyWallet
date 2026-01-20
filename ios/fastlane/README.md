@@ -47,6 +47,38 @@ Push a new beta build to TestFlight
 
 Push a new release to the App Store
 
+### ios upload_metadata
+
+```sh
+[bundle exec] fastlane ios upload_metadata
+```
+
+Upload metadata only (no binary)
+
+### ios upload_screenshots
+
+```sh
+[bundle exec] fastlane ios upload_screenshots
+```
+
+Upload screenshots only
+
+### ios upload_appstore_assets
+
+```sh
+[bundle exec] fastlane ios upload_appstore_assets
+```
+
+Upload metadata and screenshots (no binary)
+
+### ios submit_review
+
+```sh
+[bundle exec] fastlane ios submit_review
+```
+
+Submit for App Store review
+
 ### ios sync_certificates
 
 ```sh

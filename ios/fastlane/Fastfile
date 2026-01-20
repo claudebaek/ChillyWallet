@@ -95,9 +95,60 @@ platform :ios do
     # Upload to App Store
     upload_to_app_store(
       skip_screenshots: true,
-      skip_metadata: true,
+      skip_metadata: false,
       submit_for_review: false,
-      automatic_release: false
+      automatic_release: false,
+      force: true
+    )
+  end
+
+  desc "Upload metadata only (no binary)"
+  lane :upload_metadata do
+    upload_to_app_store(
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      skip_metadata: false,
+      force: true,
+      metadata_path: "./fastlane/metadata"
+    )
+  end
+
+  desc "Upload screenshots only"
+  lane :upload_screenshots do
+    upload_to_app_store(
+      skip_binary_upload: true,
+      skip_screenshots: false,
+      skip_metadata: true,
+      force: true,
+      screenshots_path: "./fastlane/screenshots"
+    )
+  end
+
+  desc "Upload metadata and screenshots (no binary)"
+  lane :upload_appstore_assets do
+    upload_to_app_store(
+      skip_binary_upload: true,
+      skip_screenshots: false,
+      skip_metadata: false,
+      force: true,
+      metadata_path: "./fastlane/metadata",
+      screenshots_path: "./fastlane/screenshots"
+    )
+  end
+
+  desc "Submit for App Store review"
+  lane :submit_review do
+    upload_to_app_store(
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      skip_metadata: true,
+      submit_for_review: true,
+      automatic_release: false,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false,
+        export_compliance_is_exempt: true
+      }
     )
   end
 
