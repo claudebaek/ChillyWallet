@@ -13,6 +13,7 @@ import { PhotoEntropyScreen } from '../screens/PhotoEntropyScreen';
 import { QRScannerScreen, QRScannerMode } from '../screens/QRScannerScreen';
 import { SignTransactionScreen } from '../screens/SignTransactionScreen';
 import { SignedTxDisplayScreen } from '../screens/SignedTxDisplayScreen';
+import { PSBTDisplayScreen } from '../screens/PSBTDisplayScreen';
 import { COLORS } from '../utils/constants';
 
 export type RootStackParamList = {
@@ -21,6 +22,13 @@ export type RootStackParamList = {
   Receive: undefined;
   Settings: undefined;
   SeedPhrase: undefined;
+  // PSBT / Cold wallet screens
+  PSBTDisplay: {
+    psbtBase64: string;
+    amount: number;
+    fee: number;
+    recipient: string;
+  };
   // Signer mode screens
   SignerMode: undefined;
   PhotoEntropy: undefined;
@@ -90,6 +98,16 @@ export const AppNavigator: React.FC<AppNavigatorProps> = ({ onLogout }) => {
         >
           {(props) => <SettingsScreen {...props} onLogout={onLogout} />}
         </Stack.Screen>
+
+        {/* PSBT / Cold Wallet Screens */}
+        <Stack.Screen
+          name="PSBTDisplay"
+          component={PSBTDisplayScreen}
+          options={{
+            title: 'Unsigned Transaction',
+            animation: 'slide_from_right',
+          }}
+        />
 
         {/* Signer Mode Screens */}
         <Stack.Screen

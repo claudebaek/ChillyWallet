@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import styled from 'styled-components/native';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useWalletStore } from '../stores';
-import { bitcoinService } from '../services';
+import { bitcoinService, blockchainService } from '../services';
 import { COLORS, FEE_LEVELS } from '../utils/constants';
 import {
   formatBTCCompact,
@@ -12,6 +12,7 @@ import {
   isValidBTCAmount,
   satoshisToBTC,
 } from '../utils/format';
+import { createUnsignedPSBT, serializePSBT } from '../utils/psbt';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -173,18 +174,37 @@ const TotalValue = styled.Text`
   color: ${COLORS.bitcoinOrange};
 `;
 
+const ButtonRow = styled.View`
+  flex-direction: row;
+  margin-top: 24px;
+  gap: 12px;
+`;
+
 const SendButton = styled.TouchableOpacity<{ disabled: boolean }>`
+  flex: 1;
   background-color: ${({ disabled }) => (disabled ? COLORS.secondaryBackground : COLORS.bitcoinOrange)};
   padding: 18px;
   border-radius: 16px;
   align-items: center;
-  margin-top: 24px;
 `;
 
 const SendButtonText = styled.Text<{ disabled: boolean }>`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: ${({ disabled }) => (disabled ? COLORS.tertiaryText : COLORS.primaryBackground)};
+`;
+
+const ColdSignButton = styled.TouchableOpacity<{ disabled: boolean }>`
+  background-color: ${({ disabled }) => (disabled ? COLORS.secondaryBackground : '#00BFA5')};
+  padding: 18px 24px;
+  border-radius: 16px;
+  align-items: center;
+`;
+
+const ColdSignButtonText = styled.Text<{ disabled: boolean }>`
+  font-size: 14px;
+  font-weight: bold;
+  color: ${({ disabled }) => (disabled ? COLORS.tertiaryText : '#0a1a1a')};
 `;
 
 const ErrorText = styled.Text`
@@ -302,6 +322,67 @@ export const SendScreen: React.FC<SendScreenProps> = ({ navigation }) => {
     }
   };
 
+  const handleColdSign = async () => {
+    if (!canSend || !wallet) return;
+
+    setSending(true);
+    try {
+      // Fetch UTXOs for the wallet
+      const utxos = await blockchainService.getUTXOs(wallet.address);
+      
+      if (utxos.length === 0) {
+        throw new Error('No UTXOs available');
+      }
+
+      // Select UTXOs (simple: use all)
+      let totalInput = 0;
+      const inputs = [];
+      for (const utxo of utxos) {
+        inputs.push({
+          txid: utxo.txid,
+          vout: utxo.vout,
+          value: utxo.value,
+        });
+        totalInput += utxo.value;
+        if (totalInput >= totalSatoshis) break;
+      }
+
+      if (totalInput < totalSatoshis) {
+        throw new Error('Insufficient funds');
+      }
+
+      // Create outputs
+      const outputs = [
+        { address: toAddress, value: amountSatoshis },
+      ];
+
+      // Add change output if needed
+      const change = totalInput - amountSatoshis - estimatedFee;
+      let changeIndex: number | undefined;
+      if (change > 546) { // dust threshold
+        outputs.push({ address: wallet.address, value: change });
+        changeIndex = 1;
+      }
+
+      // Create unsigned PSBT
+      const network = wallet.address.startsWith('bc1') ? 'mainnet' : 'testnet';
+      const psbt = createUnsignedPSBT(inputs, outputs, network, changeIndex);
+      const psbtBase64 = serializePSBT(psbt);
+
+      // Navigate to PSBT display screen
+      navigation.navigate('PSBTDisplay', {
+        psbtBase64,
+        amount: amountSatoshis,
+        fee: estimatedFee,
+        recipient: toAddress,
+      });
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to create transaction');
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <Container>
       <KeyboardAvoidingView
@@ -385,11 +466,18 @@ export const SendScreen: React.FC<SendScreenProps> = ({ navigation }) => {
               </SummaryContainer>
             )}
 
-            <SendButton disabled={!canSend || sending} onPress={handleSend}>
-              <SendButtonText disabled={!canSend || sending}>
-                {sending ? 'Sending...' : 'Send Bitcoin'}
-              </SendButtonText>
-            </SendButton>
+            <ButtonRow>
+              <SendButton disabled={!canSend || sending} onPress={handleSend}>
+                <SendButtonText disabled={!canSend || sending}>
+                  {sending ? 'Sending...' : 'Send'}
+                </SendButtonText>
+              </SendButton>
+              <ColdSignButton disabled={!canSend || sending} onPress={handleColdSign}>
+                <ColdSignButtonText disabled={!canSend || sending}>
+                  Cold Sign
+                </ColdSignButtonText>
+              </ColdSignButton>
+            </ButtonRow>
           </Content>
         </ScrollView>
       </KeyboardAvoidingView>

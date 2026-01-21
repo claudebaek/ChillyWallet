@@ -5,6 +5,7 @@
  * Format: Simplified JSON-based PSBT for air-gapped signing
  */
 
+import { base64 } from '@scure/base';
 import { NetworkType } from '../types';
 
 /**
@@ -64,7 +65,8 @@ export function serializePSBT(psbt: UnsignedPSBT): string {
   const jsonString = JSON.stringify(payload);
   
   // Base64 encode for QR compatibility
-  return btoa(jsonString);
+  const encoder = new TextEncoder();
+  return base64.encode(encoder.encode(jsonString));
 }
 
 /**
@@ -73,7 +75,8 @@ export function serializePSBT(psbt: UnsignedPSBT): string {
 export function deserializePSBT(encoded: string): UnsignedPSBT {
   try {
     // Decode base64
-    const jsonString = atob(encoded);
+    const decoder = new TextDecoder();
+    const jsonString = decoder.decode(base64.decode(encoded));
     const payload = JSON.parse(jsonString);
 
     // Validate magic and version
@@ -148,7 +151,8 @@ export function serializeSignedTx(signedTx: SignedTransaction): string {
     data: signedTx,
   };
 
-  return btoa(JSON.stringify(payload));
+  const encoder = new TextEncoder();
+  return base64.encode(encoder.encode(JSON.stringify(payload)));
 }
 
 /**
@@ -156,7 +160,8 @@ export function serializeSignedTx(signedTx: SignedTransaction): string {
  */
 export function deserializeSignedTx(encoded: string): SignedTransaction {
   try {
-    const jsonString = atob(encoded);
+    const decoder = new TextDecoder();
+    const jsonString = decoder.decode(base64.decode(encoded));
     const payload = JSON.parse(jsonString);
 
     if (payload.magic !== 'CWSTX') {

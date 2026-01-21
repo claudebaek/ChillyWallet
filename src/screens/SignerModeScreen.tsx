@@ -210,7 +210,7 @@ export const SignerModeScreen: React.FC<SignerModeScreenProps> = ({
     return unsubscribe;
   }, []);
 
-  const handleCreateWallet = useCallback(() => {
+  const navigateToPhotoEntropy = useCallback(() => {
     if (!networkStatus.isAirplaneMode) {
       Alert.alert(
         'Security Warning',
@@ -237,6 +237,25 @@ export const SignerModeScreen: React.FC<SignerModeScreenProps> = ({
       navigation.navigate('PhotoEntropy');
     }
   }, [navigation, networkStatus.isAirplaneMode]);
+
+  const handleCreateWallet = useCallback(() => {
+    if (wallet) {
+      Alert.alert(
+        'Replace Existing Wallet?',
+        'You already have a wallet. Creating a new wallet will replace it. Make sure you have backed up your current recovery phrase!',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Continue',
+            style: 'destructive',
+            onPress: navigateToPhotoEntropy,
+          },
+        ]
+      );
+    } else {
+      navigateToPhotoEntropy();
+    }
+  }, [wallet, navigateToPhotoEntropy]);
 
   const handleSignTransaction = useCallback(() => {
     if (!wallet) {
@@ -328,7 +347,7 @@ export const SignerModeScreen: React.FC<SignerModeScreenProps> = ({
         <Section>
           <SectionTitle>Actions</SectionTitle>
 
-          {wallet ? (
+          {wallet && (
             <>
               <ActionButton variant="primary" onPress={handleSignTransaction}>
                 <ActionIcon>✍️</ActionIcon>
@@ -350,31 +369,29 @@ export const SignerModeScreen: React.FC<SignerModeScreenProps> = ({
                 </ActionContent>
               </ActionButton>
             </>
-          ) : (
-            <>
-              <ActionButton variant="primary" onPress={handleCreateWallet}>
-                <ActionIcon>📷</ActionIcon>
-                <ActionContent>
-                  <ActionTitle variant="primary">Create New Wallet</ActionTitle>
-                  <ActionDescription variant="primary">
-                    Generate keys from photo entropy
-                  </ActionDescription>
-                </ActionContent>
-              </ActionButton>
-
-              <ActionButton
-                onPress={() => navigation.navigate('Onboarding')}
-              >
-                <ActionIcon>📝</ActionIcon>
-                <ActionContent>
-                  <ActionTitle>Import Existing Wallet</ActionTitle>
-                  <ActionDescription>
-                    Enter your 12-word recovery phrase
-                  </ActionDescription>
-                </ActionContent>
-              </ActionButton>
-            </>
           )}
+
+          <ActionButton onPress={handleCreateWallet}>
+            <ActionIcon>📷</ActionIcon>
+            <ActionContent>
+              <ActionTitle>Create New Wallet</ActionTitle>
+              <ActionDescription>
+                Generate keys from photo entropy
+              </ActionDescription>
+            </ActionContent>
+          </ActionButton>
+
+          <ActionButton
+            onPress={() => navigation.navigate('Onboarding')}
+          >
+            <ActionIcon>📝</ActionIcon>
+            <ActionContent>
+              <ActionTitle>Import Existing Wallet</ActionTitle>
+              <ActionDescription>
+                Enter your 12-word recovery phrase
+              </ActionDescription>
+            </ActionContent>
+          </ActionButton>
         </Section>
 
         <Section>
