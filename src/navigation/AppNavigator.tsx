@@ -8,6 +8,11 @@ import {
   SettingsScreen,
   SeedPhraseScreen,
 } from '../screens';
+import { SignerModeScreen } from '../screens/SignerModeScreen';
+import { PhotoEntropyScreen } from '../screens/PhotoEntropyScreen';
+import { QRScannerScreen, QRScannerMode } from '../screens/QRScannerScreen';
+import { SignTransactionScreen } from '../screens/SignTransactionScreen';
+import { SignedTxDisplayScreen } from '../screens/SignedTxDisplayScreen';
 import { COLORS } from '../utils/constants';
 
 export type RootStackParamList = {
@@ -16,6 +21,22 @@ export type RootStackParamList = {
   Receive: undefined;
   Settings: undefined;
   SeedPhrase: undefined;
+  // Signer mode screens
+  SignerMode: undefined;
+  PhotoEntropy: undefined;
+  QRScanner: {
+    mode: QRScannerMode;
+    onScan?: (data: string) => void;
+  };
+  SignTransaction: {
+    psbtData: string;
+  };
+  SignedTxDisplay: {
+    signedTx: string;
+    amount: number;
+    fee: number;
+    recipient: string | null;
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -69,6 +90,49 @@ export const AppNavigator: React.FC<AppNavigatorProps> = ({ onLogout }) => {
         >
           {(props) => <SettingsScreen {...props} onLogout={onLogout} />}
         </Stack.Screen>
+
+        {/* Signer Mode Screens */}
+        <Stack.Screen
+          name="SignerMode"
+          component={SignerModeScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="PhotoEntropy"
+          component={PhotoEntropyScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="QRScanner"
+          component={QRScannerScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="SignTransaction"
+          component={SignTransactionScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="SignedTxDisplay"
+          component={SignedTxDisplayScreen}
+          options={{
+            headerShown: false,
+            animation: 'fade',
+            gestureEnabled: false, // Prevent accidental back swipe
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

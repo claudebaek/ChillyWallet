@@ -258,6 +258,23 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onLogout, naviga
         </Section>
 
         <Section>
+          <SectionTitle>Cold Wallet</SectionTitle>
+          <SettingsItemSingle
+            onPress={() => navigation.navigate('SignerMode')}
+            activeOpacity={0.7}
+          >
+            <ItemIcon>✈️</ItemIcon>
+            <ItemContent>
+              <ItemTitle>Signer Mode</ItemTitle>
+              <ItemSubtitle>
+                Use this device as a cold wallet signer (enable airplane mode)
+              </ItemSubtitle>
+            </ItemContent>
+            <ArrowIcon>›</ArrowIcon>
+          </SettingsItemSingle>
+        </Section>
+
+        <Section>
           <SectionTitle>About</SectionTitle>
           <SettingsItemFirst activeOpacity={0.7}>
             <ItemIcon>📱</ItemIcon>
